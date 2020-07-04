@@ -81,7 +81,7 @@ START-OF-SELECTION.
       OTHERS                  = 17.
 
   wa_params-racommit = 'X'.
-  WA_PARAMS-DISMODE  = 'A'. "A siginifca(Visivel) E N = BackGroung
+  wa_params-dismode  = 'A'. "A siginifca(Visivel) E N = BackGroung
 
   LOOP AT ti_user INTO wa_user.
 
@@ -95,9 +95,36 @@ START-OF-SELECTION.
 
   ENDLOOP.
 
+  PERFORM preenche_bdc USING: 'X' 'SAPLSUID_MAINTENANCE'        '1050',
+                              '' 'BDC_OKCODE'                   'BACK'.
+
+
+
   CALL TRANSACTION 'SU01' USING ti_bdc
                           OPTIONS FROM wa_params
                           MESSAGES INTO ti_msg.
+
+  DATA: vl_texto TYPE string.
+
+  LOOP AT ti_msg INTO wa_msg.
+
+    CALL FUNCTION 'MESSAGE_TEXT_BUILD'
+      EXPORTING
+        msgid               = wa_msg-msgid
+        msgnr               = wa_msg-msgnr
+        msgv1               = wa_msg-msgv1
+        msgv2               = wa_msg-msgv2
+        msgv3               = wa_msg-msgv3
+        msgv4               = wa_msg-msgv4
+      IMPORTING
+        message_text_output = vl_texto.
+    .
+
+    WRITE / vl_texto.
+
+
+
+  ENDLOOP.
 
 *&---------------------------------------------------------------------*
 * Form PREENCHE_BDC
